@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+{% load static %}
+
+
+<div class="container">
+
+    <div class="border border-danger p-4">
+        <h3>{{ movies.name }}</h3>
+        {% csrf_token %}
+        <label for="locationSelect">Following are the locations of the theaters the movie is streaming</label><br><br>
+        <select name="locationSelect" id="locationSelect">
+            <option value="null">Select the location</option>
+            {% for location in location_list %}
+            <option value="{{location.id}}" >{{location.name}}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="movieId" id="movieId" value="{{movies.id}}" hidden>
+
+    </div>
+    <div class="border border-primary p-4" id="displayTheaters">
+
+        
+
+    
+    </div>
+
+</div>
+
+
+<script>
+
+    $(document).ready(function(){
+
+        console.log("Moive in theater page client")
+
+
+        $("#locationSelect").change(function(event){
+
+            event.preventDefault()
+
+            $.ajax({
+                url : "/client/send-shows/",
+                type : "POST",
+                data : {
+                    location_id : $(this).val(),
+                    movie_id : $("#movieId").val(),
+                    csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val()
+                },
+                success : function(res)
+                {
+                    if(res.status)
+                    {
+
+                        show_timming = res.show_timming
+                        $("#displayTheaters").empty()
+                        
+                        
+                        show_timming.forEach(element => {
+
+                            inner_show_time = element.shows_timmings
+                            new_screen = ""
+                            inner_show_time.forEach(temp => {
+
+                                // Dont know how to do that i am not aware if that 
+                                let start = new Date(temp.starting_time).toLocaleTimeString("en-US", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true
+                                });
+
+                                let end = new Date(temp.ending_time).toLocaleTimeString("en-US", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true
+                                });
+
+                                new_screen += `
+                                
+                                    <div class="border border-primary singleScreen" style="width: 200px;height: auto;flex-shrink: 0;">
+                                        <a href="/client/seats/${temp.show_id}/${temp.show_timming_id}">From ${start} <br>To ${end}</a>
+                                    
+                                    </div><br>
+
+                                `
+
+                            })
+                            
+                            $("#displayTheaters").append(`
+
+                                <div class="singleShow" style="width: 100%;">
+                                    <div class="row">
+                                        <div class="border border-danger p-2" style="height: 100%;">
+                                            
+                                            <h4>${element.theater_name} : ${element.screen_name}</h4>
+
+                                        </div>    
+                                        <div class="border border-danger py-3 gap-3" style="display: flex;width: 100%;overflow-x: auto;flex-wrap: nowrap;">
+                                            
+                                            ${new_screen}
+
+                                        </div>    
+                                    </div>
+                                </div>
+
+                            `)
+
+                        });
+                        
+                    }
+                }
+
+            })
+
+        })
+
+    })
+
+</script>
+
+{% endblock %}

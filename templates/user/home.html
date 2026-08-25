@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+{% load static %}
+
+
+<style>
+    #card img{
+        height: auto;
+        width: 100%;
+    }
+</style>
+
+
+<div class="container border border-dark p-4">
+
+    <div class="col-12 border border-primary p-4">
+        {% csrf_token %}
+        <select name="citySelect" id="citySelect">
+            <option value="null">Select</option>
+            {% for city in cities %}
+            <option value="{{ city.id }}">{{ city.name }}</option>
+            {% endfor %}
+        </select>
+
+    </div>
+    <div class="col-12 border border-danger p-4">
+        <div class="row" id="allCardsDiv">
+
+            {% for movie in movies %}
+                <div class="col-3 col-sm-4 col-6 border border-dark" id="card">
+                    <div id="card_part1">
+                        <img src="/media/{{ movie.poster }}" alt="err" >
+                    </div>
+                    <div id="card_part2">
+                        <div id="movie_details">
+                            <h4>{{movie.name}}</h4>
+                            <p>{{movie.description}}</p>
+                        </div>
+                        <div id="bookBtn">
+                            <button class="btn btn-primary px-4" onclick="singleMoviePage(this)" data="{{movie.id}}">Book</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    function singleMoviePage(element)
+    {
+
+        let link = element.getAttribute("data")
+        window.location.href = `/client/movie/${link}/`
+
+    }
+
+</script>
+
+<script>
+
+    $(document).ready(function(){
+
+        console.log("Home Page Client")
+
+        $("#citySelect").change(function(event){
+
+            event.preventDefault()
+            $.ajax({
+                url : "/client/send-movies/",
+                type : "POST",
+                data : {
+                    cityId : $("#citySelect").val(),
+                    csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val()
+                },
+                success : function(res)
+                {
+                    if(res.status)
+                    {
+                        all_cards_div = $("#allCardsDiv")
+
+                        all_cards_div.empty()
+
+                        let movies = res.movies
+
+
+                        movies.forEach(movie => {
+
+                            all_cards_div.append(`
+                                <div class="col-3 col-sm-4 col-6 border border-dark" id="card">
+                                    <div id="card_part1">
+                                        <img src="/media/${ movie.poster }" alt="err" >
+                                    </div>
+                                    <div id="card_part2">
+                                        <div id="movie_details">
+                                            <h4>${movie.name}</h4>
+                                            <p>${movie.description}</p>
+                                        </div>
+                                        <div id="bookBtn">
+                                            <button class="btn btn-primary px-4" onclick="singleMoviePage(this)" data="${movie.id}">Book</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `)
+
+                        });
+                    }
+                    else
+                    {
+                        alert(res.message)
+                    }
+                }
+            })
+
+        })
+
+    })
+
+</script>
+
+
+{% endblock %}

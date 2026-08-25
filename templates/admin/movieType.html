@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Movie Type Page</h3>
+
+<form id="movieTypeForm" method="post">
+
+    {% csrf_token %}
+    <input type="text" name="movieTypeName" id="movieTypeName" placeholder="Enter Name of the movieType">
+    <input type="submit" name="submit" value="Add movieType">
+
+    <br><Br><Br>
+    <p id="result"></p>
+
+    <br><Br><br>
+    <ul>
+        {% for movieType in movieTypes %}
+            <li>{{movieType.name}}</li>
+        {% endfor %}
+    </ul>
+
+
+    <script>
+
+        $(document).ready(function(){
+
+            console.log("Movie Type Page")
+
+            $("#movieTypeForm").submit(function(event){
+
+                event.preventDefault()
+
+                $.ajax({
+                    url : "",
+                    type : "POST",
+                    data : $(this).serialize(),
+                    success : function(res){
+
+                        if(res.status == true)
+                        {
+                            $("#result").html(res.message) 
+                        }
+                        else
+                        {
+                            $("#result").html(res.message)   
+                        }
+
+                    }
+                })
+
+            })
+
+        })
+
+    </script>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<h3>Theater Page</h3>
+
+
+<form id="theaterForm" method="POST">
+
+    {% csrf_token %}
+<!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
+    <select name="citySelect" id="citySelect">
+        <option value="null">Select city</option>
+        {% for city in cities %}
+        <option value="{{city.id}}">{{city.name}}</option>
+        {% endfor %}
+    </select><br><Br>
+        
+    <select name="locationSelect" id="locationSelect">
+        <option value="null">Select location</option>
+    </select><br><Br>
+
+    <input type="text" name="theaterName" placeholder="Enter the Name of Theater"><br><br>
+
+    <input type="submit" value="submit" name="submit">
+
+    <br><br><Br><p id="result"></p>
+
+</form>
+
+<!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
+<script src="{% static 'js/adminPanel.js' %}"></script>
+
+<script>
+
+    $(document).ready(function(){
+
+        console.log("theater Page")
+       
+
+        $("#theaterForm").submit(function(event){
+
+            event.preventDefault()
+
+            $.ajax({
+                url : "",
+                type : "POST",
+                data : $(this).serialize(),
+                success : function(res)
+                {
+                    $("#result").html(res.message)
+                }                    
+            })
+
+        })
+
+    })
+
+</script>
+
+{% endblock %}

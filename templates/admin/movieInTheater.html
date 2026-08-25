@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+<h3>Alot Movie in Theater</h3>
+
+<form id="movieInTheaterForm" method="POST" style="display: flex;">
+    
+    {% csrf_token %}
+
+    <div id="firstDiv">
+
+        <select name="citySelect" id="citySelect">
+            <option value="null">Select city</option>
+            {% for city in cities %}
+            <option value="{{city.id}}">{{city.name}}</option>
+            {% endfor %}
+        </select><br><Br>
+            
+        <select name="locationSelect" id="locationSelect">
+            <option value="null">Select location</option>
+        </select><br><Br>
+        
+                
+        <select name="theaterSelect" id="theaterSelect">
+            <option value="null">Select theater</option>
+        </select><br><Br>
+        
+                    
+        <select name="screenSelect" id="screenSelect">
+            <option value="null">Select theater</option>
+        </select><br><Br>
+                        
+                    
+        <select name="movieSelect" id="movieSelect">
+            <option value="null">Select Movie</option>
+            {% for movie in movies %}
+            <option value="{{movie.id}}">{{movie.name}}</option>
+            {% endfor %}
+        </select><br><Br>
+
+        <input type="date" name="releaseDate" id="releaseDate" placeholder="Enter the Release Date"><br><Br>
+
+        <input type="date" name="toDate" id="toDate" placeholder="Enter the Closing Date"><br><Br>
+
+        <input type="button" id="nextButton" value="Next">
+
+
+    </div>
+
+
+    <div id="secondDiv" style="display: none;padding-left: 50px;">
+
+        <input type="number" name="noOfShow" id="noOfShow"><br><Br>
+        <input type="button" id="enterButton" value="Enter"><br><Br>
+    </div>
+
+    
+
+</form>
+
+<script src="{% static 'js/adminPanel.js' %}"></script>
+
+<script>
+
+
+    document.querySelector("#nextButton").addEventListener('click' , function(){
+
+        // GENERATED CODE FROM CHATGPT NOT WRITTEN BY YOUR SELF
+        let fields = document.querySelectorAll("select, input[type='date']");
+
+        for (let field of fields) {
+
+            if (field.value == "" || field.value == "null") {
+                alert("Please fill all the fields.");
+                field.focus();
+                return;
+            }
+
+        }
+        
+        document.querySelector("#secondDiv").style.display = 'block'
+
+    })
+
+
+    document.querySelector("#enterButton").addEventListener('click' , function(){
+
+        console.log("enter buttom clicked")
+        document.querySelector("#enterButton").disabled = true
+        let no_of_entry = parseInt(document.querySelector("#noOfShow").value)
+
+        for(let i = 0 ; i < no_of_entry ; i++)
+        {
+               document.querySelector("#secondDiv").innerHTML += `
+                    <input type='time' name='showTime' id='showTime'><Br><Br>
+               `
+        }
+
+        document.querySelector("#secondDiv").innerHTML += `
+            <input type="submit" value="add" id="addbtn"><br><br>
+            <p id="result"></p>
+        `
+
+    })
+
+
+    $(document).ready(function(){
+
+        console.log("Movie In Theater Page")
+        
+        $("#movieInTheaterForm").submit(function(event){
+
+            event.preventDefault()
+
+            $.ajax({
+                url : "",
+                type : "POST",
+                data : $(this).serialize(),
+                success : function(res)
+                {
+                    if(res.status)
+                    {
+                        $("#result").html(res.message)   
+                    }
+                    else
+                    {
+                        $("#result").html(res.message)   
+                    }
+                }
+            })
+
+        })
+
+    })
+
+</script>
+
+
+{% endblock %}

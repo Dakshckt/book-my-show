@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashboard - SB Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="assets/demo/chart-area-demo.js"></script>
+    <script src="assets/demo/chart-bar-demo.js"></script>
+    <script src="js/datatables-simple-demo.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"
+        integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+
+
+
+</head>
+
+<body class="sb-nav-fixed">
+    <style>
+        * {
+            font-size: 16px;
+        }
+    </style>
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="index.html">
+            BookMyShow
+        </a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
+                class="fas fa-bars"></i></button>
+        <!-- Navbar Search-->
+        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            <div class="input-group">
+                <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..."
+                    aria-describedby="btnNavbarSearch" />
+                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i
+                        class="fas fa-search"></i></button>
+            </div>
+        </form>
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <h1>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav mt-3">
+
+                            {% if request.session.user_id %}
+                            {% if request.session.user_status %}
+                            <a class="nav-link" href="/home">home</a>
+                            <a class="nav-link" href="/city">City</a>
+                            <a class="nav-link" href="/location">Location</a>
+                            <a class="nav-link" href="/theater">Theater</a>
+                            <a class="nav-link" href="/screen">Screen</a>
+                            <a class="nav-link" href="/seats">Seats</a>
+                            <a class="nav-link" href="/movie-type">Movie Type</a>
+                            <a class="nav-link" href="/movie">Movie</a>
+                            <a class="nav-link" href="/movie-in-theater">Alot Movie in Theater</a>
+                            {% else %}
+                            <a class="nav-link" href="/client/home">Home</a>
+                            {% endif %}
+                            <a class="nav-link" href="/logout">Logout</a>
+                            {% else %}
+                            <a class="nav-link" href="/login">Login</a>
+                            <a class="nav-link" href="/signup">signup</a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Logged in as: {% if request.session.user_id %}{{request.session.user_name}}{%endif %}
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+
+
+
+                    {% block content %}
+                    {% endblock %}
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <script>
+                                alert("{{ message }}");
+                            </script>
+                        {% endfor %}
+                    {% endif %}
+
+                </main>
+
+
+                <!-- <div id="lastPart" class=" container-fluid bg-dark text-secondary pt-5 pb-5"
+                    style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
+                    <div class="col-lg-9 col-12  pb-5">
+                        <div class="row" style="justify-content: start;align-items: start;">
+                            <div class="col-lg-4 col-md-4 col-12 pt-5"
+                                style="display: flex;justify-content: center;align-items: center;flex-direction: column;">
+                                <h3 class="fw-bolder">BrandName</h3>
+                                <p style="text-align: justify;padding: 0px 30px 0px 30px;">Lorem ipsum dolor sit amet
+                                    consectetur adipisicing elit. Sit iste distinctio iure earum at esse minus placeat
+                                    iusto temporibus commodi?</p>
+                                <p style="text-align: justify;padding: 0px 30px 0px 30px;">Lorem ipsum, dolor sit amet
+                                    consectetur adipisicing elit. Ex unde deleniti maxime deserunt nesciunt, nam ad ut
+                                    mollitia inventore impedit aut nihil atque dicta soluta. Id.</p>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-6 pt-5"
+                                style="display: flex;justify-content: center;align-items: center;">
+                                <div>
+                                    <h3 class="fw-bolder">Visit Sections</h3>
+                                    <ul>
+                                        <li>Home</li>
+                                        <li>AboutUs</li>
+                                        <li>Services</li>
+                                        <li>Contact</li>
+                                        <li>Gallery</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-6 pt-5"
+                                style="display: flex;justify-content: center;align-items: center;">
+                                <div>
+                                    <h3 class="fw-bolder">Follow On</h3>
+                                    <ul>
+                                        <li>Instagram</li>
+                                        <li>Telegram</li>
+                                        <li>Whatsapp</li>
+                                        <li>Twitter</li>
+                                        <li>Facebook</li>
+                                    </ul>
+                                    <div style="display: flex;gap:20px">
+                                        <p><i class="fa-brands fa-instagram"></i></p>
+                                        <p><i class="fa-brands fa-facebook"></i></p>
+                                        <p><i class="fa-brands fa-telegram"></i></p>
+                                        <p><i class="fa-brands fa-whatsapp"></i></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <footer class="py-4 mt-auto " style="background-color:#343a40">
+                    <div class="container-fluid px-4">
+                        <div style="color:whitesmoke" class="d-flex align-items-center justify-content-between small">
+                            <div style="color:whitesmoke">Copyright &copy; Your Website 2023</div>
+                            <div style="color:whitesmoke">
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+
+
+            </div>
+        </div>
+
+</body>
+
+</html>

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>Login Page</h3>
+
+<form id="loginForm" method="post">
+    {% csrf_token %}
+    <input type="email" name="email" placeholder="Enter your email">
+    <input type="password" name="password" placeholder="Enter Password">
+    <input type="submit" name="submit" value="Submit">
+
+    <br><Br><BR><p id="result"></p>
+
+</form>
+
+
+<script>
+
+    $(document).ready(function(){
+        console.log("Login Page")
+
+        $("#loginForm").submit(function(event){
+
+            event.preventDefault()
+
+            $.ajax({
+                url : "",
+                type : "POST",
+                data : $(this).serialize(),
+                success : function(res){
+
+                    if(res.status)
+                    {
+                        $("#result").html(res.message)
+                        setTimeout(function(){
+                            if(res.user_status)
+                            {
+                                window.location.href = "/home/"
+                            }
+                            else
+                            {
+                                window.location.href = "/client/home/"
+                            }
+                        } , 1000)
+                    }
+                    else
+                    {
+                        $("#result").html(res.message)
+
+                    }
+                }
+
+            })
+
+        })
+    })
+
+</script>
+
+
+{% endblock %}

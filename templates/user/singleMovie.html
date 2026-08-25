@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+{% load static %}
+
+<style>
+
+    img{
+        height : auto;
+        width : 80%;
+    }
+
+</style>
+
+<div class="container pb-5 pt-1">
+
+    <div class="row border border-dark">
+        
+        <div class="col-sm-6 col-12 border border-primary" style="display: flex;align-items: center;justify-content: center;">
+            <img src="/media/{{ movie.poster }}" alt="err">
+        </div>
+        <div class="col-sm-6 col-12 border border-danger">
+            <h3>{{movie.name}}</h3>
+            <p>{{movie.desc}}</p>
+            <p>
+                {% for element in movie.movie_types %}
+                <kbd>{{element}}</kbd>
+                {% endfor %}
+            </p>
+            <br><p>{{movie.duration}} Minutes</p>
+            <br><Br><Br>
+            <button class="btn btn-primary px-4 bookTicket" id="bookTicket" data="{{movie.id}}">Book Tickets</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    document.querySelector("#bookTicket").addEventListener('click' , function(element){
+
+        let id = this.getAttribute("data");
+        window.location.href = `/client/movie-in-theater/${id}`
+    })
+
+</script>
+
+
+{% endblock %}

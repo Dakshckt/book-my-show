@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<h3>Seats Page</h3>
+<br><Br>
+
+<form id="seatForm" method="post">
+    {% csrf_token %}
+
+<!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
+    <select name="citySelect" id="citySelect">
+        <option value="null">Select city</option>
+        {% for city in cities %}
+        <option value="{{city.id}}">{{city.name}}</option>
+        {% endfor %}
+    </select><br><Br>
+        
+    <select name="locationSelect" id="locationSelect">
+        <option value="null">Select location</option>
+    </select><br><Br>
+    
+    
+    <select name="theaterSelect" id="theaterSelect">
+    <option value="null">Select theater</option>
+    </select><br><Br>
+
+
+    <select name="screenSelect" id="screenSelect">
+    <option value="null">Select theater</option>
+    </select><br><Br>
+
+
+
+    
+    <input type="number" name="row" id="row" placeholder="Enter the number of rows"><br><br>
+    <input type="number" name="seats_per_row" id="seats_per_row" placeholder="Enter the number of seats per Row"><br><br>
+    <input type="button" value="generate" id="generate"><br><br>
+    <div id="seatFormDiv">
+
+    </div>
+    
+</form>
+
+
+
+<script src="{% static 'js/adminPanel.js' %}"></script>
+
+<script>
+
+    $(document).ready(function(){
+
+        console.log("seat page")
+
+        $("#seatForm").submit(function(event){
+
+            event.preventDefault()
+
+            $.ajax({
+                url : "",
+                type : "POST",
+                data : $(this).serialize(),
+                success : function(res)
+                {
+                    $("#result").html(res.message)
+                }
+
+            })
+
+        })
+
+    })
+
+</script>
+
+<script>
+    
+    generateBtn = document.querySelector("#generate")
+    seatForm = document.querySelector("#seatForm")
+
+    generateBtn.addEventListener('click' , ()=>{
+        
+        let row = Number(document.querySelector("#row").value)
+        
+        for(let i = 0 ; i < row ; i++)
+        {
+            let alphabet = String.fromCharCode(65 + i)
+            
+            seatFormDiv.innerHTML += `
+                <label>Type of ${alphabet} Row</label>
+                <select name="rowType" id="rowType">
+                    <option value="VIP">VIP</option>
+                    <option value="Gold">Gold</option>
+                    <option value="normal" selected>normal</option>
+                </select><Br><Br>
+            `
+        }
+
+        seatFormDiv.innerHTML += `
+            <input type="submit" name="submit" value="submit">
+            <p id='result'></p>
+        `
+    })
+
+</script>
+
+{% endblock %}

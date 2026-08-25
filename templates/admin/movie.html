@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Movies Page</h3>
+
+<form id="movieForm" method="post" enctype="multipart/form-data">
+
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Enter the Name"><br><Br>
+    <textarea name="desc" id="desc" placeholder="Enter the description"></textarea><br><Br>
+    <input type="file" name="poster" id="poster" placeholder="Select any file"><br><br>
+    <select name="movieTypeSelect" id="movieTypeSelect" multiple>
+        {% for movie_type in movies_type %}
+            <option value="{{movie_type.id}}">{{movie_type.name}}</option>
+        {% endfor %}
+    </select><br><br>
+    <input type="number" name="duration" id="duration" placeholder="Enter the duration in minutes"><br><Br>
+        
+    <input type="submit" name="submit" value="add Movie"><br><Br><br>
+
+    <p id="result"></p>
+
+</form>
+
+<script>
+
+    $(document).ready(function(){
+
+        console.log("Movie Page")
+
+        $("#movieForm").submit(function(event){
+
+            event.preventDefault()
+
+            let formData = new FormData(this)
+
+            $.ajax({
+                url : "",
+                type : "POST",
+                data : formData,
+                contentType : false,
+                processData : false,
+                success : function(res)
+                {
+                    if(res.status)
+                    {
+                        $("#result").html(res.message)   
+                    }
+                    else
+                    {
+                        $("#result").html(res.message)   
+                    }
+                }
+
+            })
+
+        })
+
+    })
+
+</script>
+
+{% endblock %}

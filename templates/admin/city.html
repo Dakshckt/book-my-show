@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>City Page</h3>
+
+<form id="cityForm" method="post">
+
+    {% csrf_token %}
+    <input type="text" name="cityname" id="cityname" placeholder="Enter Name of the city">
+    <input type="submit" name="submit" value="Add City">
+
+    <br><Br><Br>
+    <p id="result"></p>
+
+    <br><Br><br>
+    <ul>
+        {% for city in cities %}
+            <li>{{city.name}}</li>
+        {% endfor %}
+    </ul>
+
+
+    <script>
+
+        $(document).ready(function(){
+
+            console.log("City Page")
+
+            $("#cityForm").submit(function(event){
+
+                event.preventDefault()
+
+                $.ajax({
+                    url : "",
+                    type : "POST",
+                    data : $(this).serialize(),
+                    success : function(res){
+
+                        if(res.status == true)
+                        {
+                            $("#result").html(res.message)  
+                            $("#cityname").val("") 
+                        }
+                        else
+                        {
+                            $("#result").html(res.message)   
+                        }
+
+                    }
+                })
+
+            })
+
+        })
+
+    </script>
+
+</form>
+
+{% endblock %}

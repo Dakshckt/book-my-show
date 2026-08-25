@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<h3>Screen Page</h3>
+
+<form id="screenForm" method="POST">
+
+    {% csrf_token %}
+<!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
+    <select name="citySelect" id="citySelect">
+        <option value="null">Select city</option>
+        {% for city in cities %}
+        <option value="{{city.id}}">{{city.name}}</option>
+        {% endfor %}
+    </select><br><Br>
+        
+    <select name="locationSelect" id="locationSelect">
+        <option value="null">Select location</option>
+    </select><br><Br>
+    
+    
+    <select name="theaterSelect" id="theaterSelect">
+    <option value="null">Select theater</option>
+    </select><br><Br>
+
+    <input type="text" name="screenName" placeholder="Enter the Name of Screen"><br><br>
+
+    <input type="submit" value="submit" name="submit">
+
+    <br><br><Br><p id="result"></p>
+
+</form>
+
+<!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
+<script src="{% static 'js/adminPanel.js' %}"></script>
+<script>
+
+    $(document).ready(function(){
+
+        console.log("screen page")
+
+        $("#screenForm").submit(function(event){
+
+            event.preventDefault()
+
+            $.ajax({
+                url : "",
+                type : "POST",
+                data : $(this).serialize(),
+                success : function(res){
+
+                    if(res.status)
+                    {
+                        $("#result").html(res.message)   
+                    }
+                    else
+                    {
+                        $("#result").html(res.message)   
+                    }
+
+                }
+            })
+
+        })
+
+    })  
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+{% load static %}
+
+<h3>Seat Selection</h3><br>
+
+<style>
+
+.seat-row{
+    display: flex;
+}
+
+.seat{
+    height: auto;
+    width: auto;
+    padding: 15px;
+    border: 1px solid #80EF80;
+    background-color: white;
+    color: black;
+    border-radius: 5px;
+}
+
+.seat:hover{
+    background-color: #acffac;
+    color: white;
+    border: 1px solid #acffac;
+}
+
+.seat-selected{
+    background-color: #80EF80;
+    color: white;
+    border: 1px solid #80EF80;
+}
+
+.seat-banned{
+    background-color:#CBCBCB;
+    color: white;
+    border: 1px solid;
+    box-shadow: 2px #CBCBCB;
+}
+
+.seat-disabled {
+    height: auto;
+    width: auto;
+    padding: 15px;
+    border-radius: 5px;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+</style>
+
+
+<div class="container p=4">
+
+    
+    <div class="row">
+        
+        <form hidden>
+            {% csrf_token %}
+        </form>
+        {% for row , seats in screen_seat_obj.items %}
+
+            <div class="col-1" style="display: flex;justify-content: center;align-items: center;">
+                {{ row }}
+            </div>
+
+            <div class="col-11 py-3">
+                
+                <div class="seat-row gap-2">
+                 
+                    {% for seat in seats %}
+                    
+                    {% if seat.status == "confirmed" %}
+                    
+                        <div class="seat seat-banned seat-disabled" data-seat-id="{{ seat.id }}" aria-disabled="">
+                            {{ seat.name }}
+                        </div>
+                    
+                    {% else %}
+                        
+                        <div class="seat" data-seat-id="{{ seat.id }}">
+                            {{ seat.name }}
+                        </div>
+                    {% endif %}
+                        
+                    {% endfor %}
+                    
+                </div>
+            
+            </div>
+            
+            {% endfor %}
+            <button style="width: 200px;" class="btn btn-primary mx-4 my-5" id="seatSelectedButton">Move to Payment</button>
+
+    </div>
+
+
+
+</div>
+
+
+<script>
+
+    const seat = document.querySelectorAll(".seat")
+
+    seat.forEach(element => {
+        
+        element.addEventListener('click' , function(){
+
+            this.classList.toggle("seat-selected");
+
+        })
+
+    });
+
+</script>
+
+<script>
+
+    $(document).ready(function(){
+
+        $("#seatSelectedButton").click(function(event){
+
+            event.preventDefault()
+
+            let selected_seats_id = []
+
+            $(".seat-selected").each(function(){
+
+                let seat_id = $(this).data("seat-id")
+
+                selected_seats_id.push(seat_id)
+
+            })
+
+            result = confirm("Procced to Payment")
+
+            if(result)
+            {
+                $.ajax({
+
+                    url : "",
+                    type : "POST",
+                    data : {
+                        selected_seats : JSON.stringify(selected_seats_id),
+                        csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+                    },
+                    success : function(res){
+
+                        console.log(res.message)
+
+                    }
+
+                })
+            }
+            else
+            {
+                alert("Error")
+            }
+
+        })
+
+
+    })
+
+
+
+    function make_payment_confirm(text)
+    {
+
+    }
+
+</script>
+
+{% endblock %}
