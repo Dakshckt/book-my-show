@@ -15,31 +15,33 @@
 
 <div class="container border border-dark p-4">
 
-    <div class="col-12 border border-primary p-4">
+    <div class="col-12 p-4" style="display: flex;justify-content:space-between;align-items: center;">
         {% csrf_token %}
-        <select name="citySelect" id="citySelect">
+        <label for="citySelect" class="h3 fw-bold">SELECT CITY</label>
+        <select name="citySelect" id="citySelect" class="px-4 py-2 border border-dark-500 rounded-lg">
             <option value="null">Select</option>
             {% for city in cities %}
             <option value="{{ city.id }}">{{ city.name }}</option>
             {% endfor %}
         </select>
-
+        
     </div>
-    <div class="col-12 border border-danger p-4">
+    <hr >
+    <div class="col-12 p-4">
         <div class="row" id="allCardsDiv">
 
             {% for movie in movies %}
-                <div class="col-3 col-sm-4 col-6 border border-dark" id="card">
+                <div class="col-3 col-sm-4 col-6 transition-all duration-300 ease-out hover:scale-95 hover:-translate-y-2 hover:shadow-2xl hover:bg-gray-100 hover:z-10 rounded-lg" id="card">
                     <div id="card_part1">
                         <img src="/media/{{ movie.poster }}" alt="err" >
                     </div>
                     <div id="card_part2">
                         <div id="movie_details">
-                            <h4>{{movie.name}}</h4>
-                            <p>{{movie.description}}</p>
+                            <h4 class="fw-bold h1">{{movie.name}}</h4>
+                            <p class="py-2 pb-4">{{movie.description}}</p>
                         </div>
                         <div id="bookBtn">
-                            <button class="btn btn-primary px-4" onclick="singleMoviePage(this)" data="{{movie.id}}">Book</button>
+                            <button class="btn btn-primary px-5" onclick="singleMoviePage(this)" data="{{movie.id}}">Book</button>
                         </div>
                     </div>
                 </div>
@@ -59,6 +61,11 @@
         window.location.href = `/client/movie/${link}/`
 
     }
+
+
+
+
+    
 
 </script>
 
@@ -92,17 +99,17 @@
                         movies.forEach(movie => {
 
                             all_cards_div.append(`
-                                <div class="col-3 col-sm-4 col-6 border border-dark" id="card">
+                                <div class="col-3 col-sm-4 col-6 hover:bg-gray-200 transition-all duration-100 ease" id="card">
                                     <div id="card_part1">
                                         <img src="/media/${ movie.poster }" alt="err" >
                                     </div>
                                     <div id="card_part2">
                                         <div id="movie_details">
-                                            <h4>${movie.name}</h4>
-                                            <p>${movie.description}</p>
+                                            <h4 class="fw-bold h1">${movie.name}</h4>
+                                            <p class="py-2 pb-4">${movie.description}</p>
                                         </div>
                                         <div id="bookBtn">
-                                            <button class="btn btn-primary px-4" onclick="singleMoviePage(this)" data="${movie.id}">Book</button>
+                                            <button class="btn btn-primary px-5" onclick="singleMoviePage(this)" data="${movie.id}">Book</button>
                                         </div>
                                     </div>
                                 </div>
