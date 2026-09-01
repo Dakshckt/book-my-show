@@ -35,7 +35,7 @@
                     <div id="card_part1">
                         <img src="/media/{{ movie.poster }}" alt="err" >
                     </div>
-                    <div id="card_part2">
+                    <div id="card_part2" class="pb-3">
                         <div id="movie_details">
                             <h4 class="fw-bold h1">{{movie.name}}</h4>
                             <p class="py-2 pb-4">{{movie.description}}</p>
@@ -99,11 +99,11 @@
                         movies.forEach(movie => {
 
                             all_cards_div.append(`
-                                <div class="col-3 col-sm-4 col-6 hover:bg-gray-200 transition-all duration-100 ease" id="card">
+                                <div class="col-3 col-sm-4 col-6 transition-all duration-300 ease-out hover:scale-95 hover:-translate-y-2 hover:shadow-2xl hover:bg-gray-100 hover:z-10 rounded-lg" id="card">
                                     <div id="card_part1">
                                         <img src="/media/${ movie.poster }" alt="err" >
                                     </div>
-                                    <div id="card_part2">
+                                    <div id="card_part2" class="pb-3">
                                         <div id="movie_details">
                                             <h4 class="fw-bold h1">${movie.name}</h4>
                                             <p class="py-2 pb-4">${movie.description}</p>
