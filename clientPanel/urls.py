@@ -8,4 +8,5 @@ urlpatterns = [
     path("send-shows/" , views.sendShowsFunc , name="sendShowsFunc"),
     path("movie-in-theater/<str:link>/" , views.movieInTheater , name="movieInTheater"),
     path("seats/<str:show_id>/<str:show_timing_id>/" , views.seatSelectionFunc , name="seatSelectionFunc"),
+    path("my-booking/" , views.myBookingFunc , name="myBookingFunc")
 ]

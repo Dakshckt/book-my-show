@@ -59,6 +59,7 @@ def sendMovieFunc(req):
 @login_required
 @client_required
 def clientHomeFunc(req):
+    print("\n\nclientHomeFunc Function Called\n\n")
 
     cities = list(city.find())
     movies = list(movie.find())
@@ -77,7 +78,7 @@ def clientHomeFunc(req):
 @login_required
 @client_required
 def singleMovieFunc(req , link):
-
+    print("\n\nsingleMovieFunc Function Called\n\n")
     raw_movie = movie.find_one({"_id" : ObjectId(link)})
 
     types_list = []
@@ -103,11 +104,13 @@ def singleMovieFunc(req , link):
 @login_required
 @client_required
 def movieInTheater(req , link):
+    print("\n\nMovieInTheater Function Called\n\n")
     try :
         movieId = link
         cityId = req.session["user_selected_city"]
 
         all_shows = list(shows.find({"movie_id" : ObjectId(movieId) , "city_id" : ObjectId(cityId)}))
+       
 
         location_list = []
         for element in all_shows:
@@ -142,6 +145,7 @@ def movieInTheater(req , link):
 @login_required
 @client_required
 def sendShowsFunc(req):
+    print("\nsendShowsFunc Function Called\n")
     if req.method == "POST":
         movieId = req.POST.get("movie_id")
         locationId = req.POST.get("location_id")
@@ -153,6 +157,9 @@ def sendShowsFunc(req):
         for element in major_shows:
             show_timming_list = list(shows_timing.find({"shows_id" : element["_id"]}))
 
+            release_date = element["release_date"]
+            to_date = element["to_date"]
+          
             show_timming_obj_list = []
             for temp in show_timming_list:
                 show_timming_obj = {
@@ -171,7 +178,8 @@ def sendShowsFunc(req):
                 "theater_name" : str(theaterObj["name"]),
                 "screen_id" : str(screenObj["_id"]),
                 "screen_name" : str(screenObj["name"]),
-                "shows_timmings" : show_timming_obj_list
+                "shows_timmings" : show_timming_obj_list,
+                
             }
 
             all_shows.append(obj)
@@ -193,7 +201,7 @@ def calculate_price_func(selected_seats):
 @login_required
 @client_required
 def seatSelectionFunc(req , show_id , show_timing_id):
-
+    print("\n\nseatSelectionFunc Function Called\n\n")
     if req.method == "POST":
 
         print("Called from seat selection")
@@ -269,3 +277,37 @@ def seatSelectionFunc(req , show_id , show_timing_id):
 
 
     return render(req , "user/seatSelection.html" , {"screen_seat_obj" : screen_seat_obj})
+
+
+
+
+
+def myBookingFunc(req):
+
+    all_booking = list(booking.find({"user_id" : ObjectId(req.session["user_id"])}))
+
+    expired_booking = []
+    upcomming_booking = []
+
+
+    for booking_temp in all_booking:
+        show_timming_obj = shows_timing.find_one({"_id" : ObjectId(booking_temp["show_timing_id"])})
+
+        show_date = booking_temp["booking_date"]
+        show_start_time = show_timming_obj["start_time"]
+        show_end_time = show_timming_obj["end_time"]
+
+        show_datetime = datetime.combine(
+            show_date.date(),
+            show_end_time.time()
+        )
+
+        current_datetime = datetime.now()
+
+        if current_datetime >= show_datetime:
+            expired_booking.append(booking_temp)
+        else:
+            upcomming_booking.append(booking_temp)
+
+
+    return render(req , "user/myBooking.html" , {"upcomming_booking" : upcomming_booking , "expired_booking" : expired_booking})
