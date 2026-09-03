@@ -7,6 +7,7 @@ urlpatterns = [
     path("send-movies/" , views.sendMovieFunc , name="sendMovieFunc"),
     path("send-date/" , views.sendDateFunc , name="sendDateFunc"),
     path("send-shows/" , views.sendShowsFunc , name="sendShowsFunc"),
+    path("cancel-seat/" , views.cancelSeatFunc , name="cancelSeatFunc"),
     path("movie-in-theater/<str:link>/" , views.movieInTheater , name="movieInTheater"),
     path("seats/<str:show_id>/<str:show_timing_id>/<str:date_selected>/" , views.seatSelectionFunc , name="seatSelectionFunc"),
     path("my-booking/" , views.myBookingFunc , name="myBookingFunc")

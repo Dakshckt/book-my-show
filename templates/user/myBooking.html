@@ -4,10 +4,226 @@
 {% block content %}
 {% load static %}
 
-<h2>My Booking Page</h2>
+<!-- <h2>My Booking Page</h2>
 
-<p>{{expired_booking}}</p>
-<p>{{upcomming_booking}}</p>
+<hr>
+<h3>Bookings</h3>
 
+<div>
+    {% for booking_obj in upcomming_booking %}
+    <p>{{booking_obj}}</p><br>
+    {% endfor %}
+</div>
+
+<hr>
+<h3>History</h3>
+
+<div>
+    {% for booking_obj in expired_booking %}
+    <p>{{booking_obj}}</p><br>
+    {% endfor %}
+</div>
+
+<hr> -->
+
+<style>
+
+.tab{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    width: 200px;
+}
+
+
+
+.left_part img{
+    width: 100%;
+    height: auto;
+}
+
+
+</style>
+
+<div class="container">
+
+    <div class="col-12 border border-dark py-3" style="display: flex;justify-content: center;align-items: center;">
+        <div class="row">
+            <div class="tab py-3" id="booking_tab">
+                Bookings
+            </div>
+            <div class="tab py-3" id="history_tab">
+                History
+            </div>
+            <div class="tab py-3" id="cancel_tab">
+                Cancelled
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 border border-primary" id="bookings_tickets">
+            
+        <div>
+            {% for booking_obj in upcomming_booking %}
+                <div class="card_div row p-3">
+                    <div class="col-sm-4 col-12 left_part">
+                        <img src="/media/{{ booking_obj.movie_poster }}" alt="">
+                    </div>
+                    <div class="col-sm-8 col-12 right_part">
+                        
+                            {% csrf_token %}
+                            <h2 class="h2" style="font-weight: 900;">Movie Name : {{booking_obj.movie_name}}</h2>
+                            <p>Theater : {{booking_obj.theater_name}}</p>
+                            <P>Date : {{booking_obj.booking_date}}</P>
+                            <p>Show Timming : {{booking_obj.show_starting_time}}</p><br>
+                            <p>
+                                Seats :<br>
+                                {% for name , type in booking_obj.no_of_seats %}
+                                <span>{{name}} : {{type}}</span><br>
+                                {% endfor %}
+                            </p><br>
+                            <p>Total Bill : {{booking_obj.total_amount}} Rs.</p><br><Br>
+                            <input type="button" class="btn btn-primary px-5 cancelation_button" data-id="{{booking_obj.booking_id}}" value="Cancel">
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <div class="col-12 border border-danger"  id="history_tickets">
+            
+        <div>
+            {% for booking_obj in expired_booking %}
+                <div class="card_div row p-3">
+                    <div class="col-sm-4 col-12 left_part">
+                        <img src="/media/{{ booking_obj.movie_poster }}" alt="">
+                    </div>
+                    <div class="col-sm-8 col-12 right_part">
+
+                            <h2 class="h2" style="font-weight: 900;">Movie Name : {{booking_obj.movie_name}}</h2>
+                            <p>Theater : {{booking_obj.theater_name}}</p>
+                            <P>Date : {{booking_obj.booking_date}}</P>
+                            <p>Show Timming : {{booking_obj.show_starting_time}}</p><br>
+                            <p>
+                                Seats :<br>
+                                {% for name , type in booking_obj.no_of_seats %}
+                                <span>{{name}} : {{type}}</span><br>
+                                {% endfor %}
+                            </p><br>
+                            <p>Total Bill : {{booking_obj.total_amount}} Rs.</p><br><Br>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+    </div>
+
+    <div class="col-12 border border-danger"  id="cancelled_tickets">
+            
+        <div>
+            {% for booking_obj in cancelled_booking %}
+                <div class="card_div row p-3">
+                    <div class="col-sm-4 col-12 left_part">
+                        <img src="/media/{{ booking_obj.movie_poster }}" alt="">
+                    </div>
+                    <div class="col-sm-8 col-12 right_part">
+
+                            <h2 class="h2" style="font-weight: 900;">Movie Name : {{booking_obj.movie_name}}</h2>
+                            <p>Theater : {{booking_obj.theater_name}}</p>
+                            <P>Date : {{booking_obj.booking_date}}</P>
+                            <p>Show Timming : {{booking_obj.show_starting_time}}</p><br>
+                            <p>
+                                Seats :<br>
+                                {% for name , type in booking_obj.no_of_seats %}
+                                <span>{{name}} : {{type}}</span><br>
+                                {% endfor %}
+                            </p><br>
+                            <p>Total Bill : {{booking_obj.total_amount}} Rs.</p><br><Br>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+    </div>
+
+
+</div>
+
+<script>
+
+    booking_tab = document.querySelector("#booking_tab")
+    history_tab = document.querySelector("#history_tab")
+    cancel_tab = document.querySelector("#cancel_tab")
+    document.querySelector("#bookings_tickets").style.display = "flex"
+    document.querySelector("#history_tickets").style.display = "none"
+    document.querySelector("#cancelled_tickets").style.display = "none"
+
+    booking_tab.addEventListener('click' , function(){
+
+        document.querySelector("#bookings_tickets").style.display = "flex"
+        document.querySelector("#history_tickets").style.display = "none"
+        document.querySelector("#cancelled_tickets").style.display = "none"
+
+    })
+
+    history_tab.addEventListener('click' , function(){
+
+        document.querySelector("#bookings_tickets").style.display = "none"
+        document.querySelector("#history_tickets").style.display = "flex"
+        document.querySelector("#cancelled_tickets").style.display = "none"
+
+    })
+
+    cancel_tab.addEventListener('click' , function(){
+
+        document.querySelector("#bookings_tickets").style.display = "none"
+        document.querySelector("#history_tickets").style.display = "none"
+        document.querySelector("#cancelled_tickets").style.display = "flex"
+
+    })
+
+</script>
+
+
+<script>
+
+    $(document).ready(function(){
+
+        $(".cancelation_button").click(function(event){
+
+            event.preventDefault()
+
+            let booking_id = $(this).data("id");
+
+            alert("Confirm Cancel the ticket")
+
+            $.ajax({
+                url : "/client/cancel-seat/",
+                type : "POST",
+                data : {
+                    "booking_id" : booking_id,
+                    csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val() 
+                },
+                success : function(res)
+                {
+                    alert(res.message)
+                    if(res.message)
+                    {
+                        window.location.reload()
+                    }
+                }
+
+            })
+
+        })
+
+    })
+
+</script>
 
 {% endblock %}

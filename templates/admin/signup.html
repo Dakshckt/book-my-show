@@ -7,12 +7,12 @@
 <form id="signupForm" method="post">
     {% csrf_token %}
 
-    <input type="text" name="name" placeholder="Enter Your Name"><br>
-    <input type="text" name="phone" placeholder="Enter Your Phone"><br>
-    <input type="email" name="email" placeholder="Enter Your Email"><br>
-    <input type="password" name="password" placeholder="Enter Your Password"><Br>
-    <input type="password" name="confirm_password" placeholder="Confirm Your Password"><br>
-    <input type="submit" name="submit" value="submit">
+    <input type="text" name="name" placeholder="Enter Your Name" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+    <input type="text" name="phone" placeholder="Enter Your Phone" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+    <input type="email" name="email" placeholder="Enter Your Email" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+    <input type="password" name="password" placeholder="Enter Your Password" class="border border-black px-3 py-2 mt-4 ms-2"><Br>
+    <input type="password" name="confirm_password" placeholder="Confirm Your Password" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+    <input type="submit" name="submit" value="submit" class="btn btn-primary px-3 mt-4 ms-2 px-5">
 
     <br><Br><Br>
     <p id="result"></p>

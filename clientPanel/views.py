@@ -337,16 +337,23 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
 
 
 
+@login_required
+@client_required
 def myBookingFunc(req):
 
     all_booking = list(booking.find({"user_id" : ObjectId(req.session["user_id"])}))
 
     expired_booking = []
     upcomming_booking = []
+    cancelled_booking = []
 
 
     for booking_temp in all_booking:
         show_timming_obj = shows_timing.find_one({"_id" : ObjectId(booking_temp["show_timing_id"])})
+        show_obj = shows.find_one({"_id" : show_timming_obj["shows_id"]})
+        theater_obj = theater.find_one({"_id" : show_obj["theater_id"]})
+        movie_obj = movie.find_one({"_id" : show_obj["movie_id"]})
+        
 
         show_date = booking_temp["booking_date"]
         show_start_time = show_timming_obj["start_time"]
@@ -355,14 +362,80 @@ def myBookingFunc(req):
         show_datetime = datetime.combine(
             show_date.date(),
             show_end_time.time()
-        )
+        )  
 
         current_datetime = datetime.now()
 
-        if current_datetime >= show_datetime:
-            expired_booking.append(booking_temp)
+        if current_datetime >= show_datetime: 
+
+            selected_seat_arr = []
+            for i in booking_temp["selected_seats"]:
+                single_seat_obj = seats.find_one({"_id" : ObjectId(i)})
+                selected_seat_arr.append([ single_seat_obj["name"] ,  single_seat_obj["type"] ])
+
+            booking_obj = {
+                "booking_id" : booking_temp["_id"],
+                "movie_name" : movie_obj["name"],
+                "movie_poster" : movie_obj["poster"],
+                "theater_name" : theater_obj["name"],
+                "booking_date" : booking_temp["booking_date"].date(),
+                "show_starting_time" : show_start_time.time(),
+                "total_amount" : booking_temp["total_amount"],
+                "no_of_seats" : selected_seat_arr,
+                "status" : booking_temp["status"],
+            }
+            # print("\n\n")
+            # print(booking_obj)
+            # print("\n\n")
+
+            if booking_temp["status"] == "cancel":
+                cancelled_booking.append(booking_obj)
+            else:
+                expired_booking.append(booking_obj)
         else:
-            upcomming_booking.append(booking_temp)
+
+            selected_seat_arr = []
+            for i in booking_temp["selected_seats"]:
+                single_seat_obj = seats.find_one({"_id" : ObjectId(i)})
+                selected_seat_arr.append([ single_seat_obj["name"] ,  single_seat_obj["type"] ])
+
+            booking_obj = {
+                "booking_id" : str(booking_temp["_id"]),
+                "movie_name" : movie_obj["name"],
+                "movie_poster" : movie_obj["poster"],
+                "theater_name" : theater_obj["name"],
+                "booking_date" : booking_temp["booking_date"].date(),
+                "show_starting_time" : show_start_time.time(),
+                "total_amount" : booking_temp["total_amount"],
+                "no_of_seats" : selected_seat_arr,
+                "status" : booking_temp["status"],
+            }
+
+            if booking_temp["status"] == "cancel":
+                cancelled_booking.append(booking_obj)
+            else:
+                upcomming_booking.append(booking_obj)
 
 
-    return render(req , "user/myBooking.html" , {"upcomming_booking" : upcomming_booking , "expired_booking" : expired_booking})
+    return render(req , "user/myBooking.html" , {"upcomming_booking" : upcomming_booking , "expired_booking" : expired_booking , "cancelled_booking" : cancelled_booking})
+
+
+
+
+def cancelSeatFunc(req):
+
+    if req.method == "POST":
+        booking_id = req.POST.get("booking_id")
+
+        result = booking.update_one({"_id" : ObjectId(booking_id)},{"$set" : {"status" : "cancel"}})
+
+        if result.modified_count > 0:
+            return JsonResponse({
+                "status": True,
+                "message": "Booking cancelled successfully"
+            })
+        else:
+            return JsonResponse({
+                "status": False,
+                "message": "Booking not found or already cancelled"
+            })
