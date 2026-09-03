@@ -4,7 +4,7 @@
 {% block content %}
 {% load static %}
 
-<h3>Seat Selection</h3><br>
+<h3>Seat Selection : {{date_selected}}</h3><br>
 
 <style>
 
@@ -60,6 +60,7 @@
         
         <form hidden>
             {% csrf_token %}
+            <input type="text" id="date_selected" value="{{date_selected}}">
         </form>
         {% for row , seats in screen_seat_obj.items %}
 
@@ -146,11 +147,13 @@
                     type : "POST",
                     data : {
                         selected_seats : JSON.stringify(selected_seats_id),
+                        date_selected : $("#date_selected").val(),
                         csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
                     },
                     success : function(res){
 
-                        console.log(res.message)
+                        alert(res.message)
+                        window.location.href = "/client/my-booking/"
 
                     }
 

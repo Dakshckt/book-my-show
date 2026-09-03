@@ -2,7 +2,7 @@ from django.shortcuts import render , redirect
 from database.collections import city , movie
 from django.http import JsonResponse , HttpResponse
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime , timedelta
 from database.collections import shows , shows_timing , city , theater , movie , movie_type , location , screen , seats , booking
 from adminPanel.support import login_required , admin_required , client_required
 from django.contrib import messages
@@ -142,10 +142,9 @@ def movieInTheater(req , link):
         return redirect("/client/home/")
 
 
-@login_required
-@client_required
-def sendShowsFunc(req):
-    print("\nsendShowsFunc Function Called\n")
+
+def sendDateFunc(req):
+    print("\nsendDateFunc Function Called\n")
     if req.method == "POST":
         movieId = req.POST.get("movie_id")
         locationId = req.POST.get("location_id")
@@ -153,12 +152,63 @@ def sendShowsFunc(req):
 
         major_shows = list(shows.find({"movie_id" : ObjectId(movieId) , "city_id" : ObjectId(cityId) , "location_id" : ObjectId(locationId)}))
         all_shows = []
+        # print("\n\n")
+        # print(major_shows)
+        # print("\n\n")
+
+
+        all_dates = []
 
         for element in major_shows:
-            show_timming_list = list(shows_timing.find({"shows_id" : element["_id"]}))
 
             release_date = element["release_date"]
+            release_date = release_date.date()
             to_date = element["to_date"]
+            to_date = to_date.date()
+            current_date = datetime.now().date()
+
+            if release_date < current_date:
+                release_date = current_date
+
+            current_date = release_date
+
+            while current_date <= to_date:
+
+                if current_date not in all_dates:
+                    all_dates.append(current_date)
+
+                current_date += timedelta(days=1)
+
+        # print(all_dates)
+
+        return JsonResponse({
+            "status" : True,
+            "all_dates" : all_dates
+        })
+
+
+
+@login_required
+@client_required
+def sendShowsFunc(req):
+    print("\nsendShowsFunc Function Called\n")
+    if req.method == "POST":
+        movieId = req.POST.get("movie_id")
+        locationId = req.POST.get("location_id")
+        date_selected = req.POST.get("selected_date")  # Wild Card Entry of this Selected Date
+        selected_date = datetime.strptime(
+            date_selected,
+            "%Y-%m-%d"
+        )
+        cityId = req.session["user_selected_city"]
+        
+
+        major_shows = list(shows.find({"release_date" : {"$lte" : selected_date} , "to_date" : {"$gte" : selected_date} , "movie_id" : ObjectId(movieId) , "city_id" : ObjectId(cityId) , "location_id" : ObjectId(locationId)}))
+        all_shows = []
+
+        for element in major_shows:
+
+            show_timming_list = list(shows_timing.find({"shows_id" : element["_id"]}))
           
             show_timming_obj_list = []
             for temp in show_timming_list:
@@ -184,8 +234,6 @@ def sendShowsFunc(req):
 
             all_shows.append(obj)
 
-
-        
         return JsonResponse({
             "status" : True,
             "show_timming" : all_shows
@@ -200,11 +248,15 @@ def calculate_price_func(selected_seats):
 
 @login_required
 @client_required
-def seatSelectionFunc(req , show_id , show_timing_id):
+def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
     print("\n\nseatSelectionFunc Function Called\n\n")
+    # print(date_selected , "\n\n")
     if req.method == "POST":
 
+        booking_date = req.POST.get("date_selected")
+
         print("Called from seat selection")
+        print(booking_date , "\n\n")
 
         selected_seats = json.loads(req.POST.get("selected_seats"))
 
@@ -220,11 +272,13 @@ def seatSelectionFunc(req , show_id , show_timing_id):
             "show_id" : ObjectId(show_id),
             "selected_seats" : selected_seats,
             "payment_id" : None,
-            "booking_date" : datetime.now(),
+            "booking_date" : datetime.strptime(booking_date, "%Y-%m-%d"),
             "total_amount" : calculated_price,
             "status" : "confirmed",       # Has only 3 values as 'confirmed' 'cancelled' 'available'  
         }
-
+        print("\n\n")
+        print(booking_obj)
+        print("\n\n")
         result = booking.insert_one(booking_obj)
 
         if result:    
@@ -233,18 +287,19 @@ def seatSelectionFunc(req , show_id , show_timing_id):
 
 
     # Not displayed the type of seat in the row which will also help to calculate the price of the seat 
+    selected_date_obj = datetime.strptime(date_selected, "%Y-%m-%d")
 
     show_obj = shows.find_one({"_id" : ObjectId(show_id)})
     show_timing_obj = shows_timing.find_one({"_id" : ObjectId(show_timing_id)})
-    shows_booking = list(booking.find({"show_id" : show_obj["_id"] , "show_timing_id" : show_timing_obj["_id"] , "status": "confirmed"}))
+    shows_booking = list(booking.find({"show_id" : show_obj["_id"] , "show_timing_id" : show_timing_obj["_id"] , "status": "confirmed" , "booking_date" : selected_date_obj}))
     seat_booked_ids = []
 
     for booking_obj in shows_booking:
         seat_booked_ids.extend(booking_obj["selected_seats"])
 
-    print("\n\n\n")
-    print(seat_booked_ids)
-    print("\n\n\n")
+    # print("\n\n\n")
+    # print(seat_booked_ids)
+    # print("\n\n\n")
 
     screen_obj = screen.find_one({"_id" : show_obj["screen_id"]})
     screen_seats_list = list(seats.find({"screen_id" : screen_obj["_id"]}))
@@ -276,7 +331,7 @@ def seatSelectionFunc(req , show_id , show_timing_id):
         screen_seat_obj[row].append(single_obj)
 
 
-    return render(req , "user/seatSelection.html" , {"screen_seat_obj" : screen_seat_obj})
+    return render(req , "user/seatSelection.html" , {"screen_seat_obj" : screen_seat_obj , "date_selected" : date_selected})
 
 
 

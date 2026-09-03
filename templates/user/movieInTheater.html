@@ -20,6 +20,11 @@
         <input type="text" name="movieId" id="movieId" value="{{movies.id}}" hidden>
 
     </div>
+    <div class="border border-success p-4" style="display: flex;flex-wrap: wrap;" id="dateDisplay">
+    
+
+
+    </div>
     <div class="border border-primary p-4" id="displayTheaters">
 
         
@@ -42,7 +47,7 @@
             event.preventDefault()
 
             $.ajax({
-                url : "/client/send-shows/",
+                url : "/client/send-date/",
                 type : "POST",
                 data : {
                     location_id : $(this).val(),
@@ -51,6 +56,60 @@
                 },
                 success : function(res)
                 {
+
+
+                    if(res.status)
+                    {
+                        all_dates = res.all_dates
+
+                        $("#dateDisplay").html("")
+                        result = ""
+                        all_dates.forEach(element => {
+                            
+                            result = $("#dateDisplay").html()
+                            $("#dateDisplay").html(result + `<br>
+
+                                <button class="btn btn-outline-dark me-2 mt-2 p-2 dateCard" data-date="${element}">${element}</button>
+
+                            `)
+
+                        });
+
+                        $("#displayTheaters").html("")
+                    }
+
+                    // THIS IS FROM THE BELOW CODE WAS TAKEN 
+
+
+                }
+
+            })
+
+        })
+
+
+        $(document).on('click' , ".dateCard" , function(){
+
+            $(".dateCard").removeClass("bg-blue-600 text-white border-blue-600");
+
+            $(this).addClass("bg-blue-600 text-white border-blue-600");
+
+            date_selected = $(this).data("date")
+            // alert("Date Selected : " + date_selected)
+
+            $.ajax({
+                url : "/client/send-shows/",
+                type : "POST",
+                data : {
+                    location_id : $("#locationSelect").val(),
+                    movie_id : $("#movieId").val(),
+                    selected_date : date_selected,
+                    csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val(),
+                },
+                success : function(res)
+                {
+
+                    
                     if(res.status)
                     {
 
@@ -80,8 +139,8 @@
                                 new_screen += `
                                 
                                     <div class="border border-primary singleScreen" style="width: 200px;height: auto;flex-shrink: 0;">
-                                        <a href="/client/seats/${temp.show_id}/${temp.show_timming_id}">From ${start} <br>To ${end}</a>
-                                    
+                                        <a href="/client/seats/${temp.show_id}/${temp.show_timming_id}/${date_selected}">From ${start} <br>To ${end}</a>
+                                        
                                     </div><br>
 
                                 `
@@ -110,11 +169,14 @@
                         });
                         
                     }
-                }
 
+                }
+                
             })
 
         })
+        
+
 
     })
 
